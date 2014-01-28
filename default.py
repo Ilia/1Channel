@@ -474,7 +474,13 @@ def get_sources(url, title, img, year, imdbnum, dialog):
     if dialog and _1CH.get_setting(
             'auto-play') == 'false':  # we're comming from a .strm file and can't create a directory so we have to pop a
         sources = []                  # dialog if auto-play isn't on
-        img = xbmc.getInfoImage('ListItem.Thumb')
+        
+        # sometimes you can't get the image from ListItem.Thumb
+        # so why not just you the main image
+        _img = xbmc.getInfoImage('ListItem.Thumb')
+        if _img != "":
+            img = _img
+
         for item in hosters:
             try:
                 label = format_label_source(item)
