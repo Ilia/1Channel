@@ -33,7 +33,9 @@
 	<string id="30806">       Subscription update interval</string>
 	<string id="30807">       Update library afterward?</string>
 	<string id="30808">       Clean Up subscriptions for ended shows</string>
-	<string id="30809">       During Playback?</string>
+	<string id="30809">Enable automatic movie update</string>
+	<string id="30810">       Update interval</string>
+	<string id="30811">       Run on start up</string>
 
 	<string id="30906">Use dialogs for source selection</string>
     <string id="30905">Auto-play</string>
