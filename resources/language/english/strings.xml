@@ -36,7 +36,9 @@
 	<string id="30809">Enable automatic movie update</string>
 	<string id="30810">       Update interval</string>
 	<string id="30811">       Run on start up</string>
-
+	<string id="30812">       Update Now</string>
+	<string id="30813">       Update Category</string>
+	
 	<string id="30905">Auto-play</string>
 	<string id="30900">Enable sorting of sources</string>
 	<string id="30901">     Host Ranking (coma separated)</string>

@@ -11,7 +11,6 @@ import xbmc
 import xbmcgui
 import xbmcaddon
 
-
 ADDON = xbmcaddon.Addon(id='plugin.video.1channel')
 
 try:
@@ -204,6 +203,14 @@ class Service(xbmc.Player):
 
 
 monitor = Service()
+
+if ADDON.getSetting('auto-update-movies-startup') == 'true' and not xbmc.abortRequested:
+    xbmc.log('PrimeWire: Updating on start')
+    now = datetime.datetime.now()
+    builtin = 'RunPlugin(plugin://plugin.video.1channel/?mode=MovieAutoUpdate)'
+    xbmc.executebuiltin(builtin)
+    ADDON.setSetting('auto-update-movies-last-run', now.strftime("%Y-%m-%d %H:%M:%S.%f"))
+
 while not xbmc.abortRequested:
     if ADDON.getSetting('auto-update-subscriptions') == 'true':
         now = datetime.datetime.now()
@@ -235,7 +242,7 @@ while not xbmc.abortRequested:
                 try: xbmc.log('PrimeWire: Service: Updating movies')
                 except: pass
                 # TODO use settings auto-update-movies-folder to update specific section/sort
-                builtin = 'RunPlugin(plugin://plugin.video.1channel/?mode=GetFilteredResults&section&sort=featured)'
+                builtin = 'RunPlugin(plugin://plugin.video.1channel/?mode=MovieAutoUpdate)'
                 xbmc.executebuiltin(builtin)
                 ADDON.setSetting('auto-update-movies-last-run', now.strftime("%Y-%m-%d %H:%M:%S.%f"))
             else:
@@ -246,12 +253,6 @@ while not xbmc.abortRequested:
         monitor._lastPos = monitor.getTime()
         xbmc.sleep(1000)
     xbmc.sleep(1000)
-
-if ADDON.getSetting('auto-update-movies-startup') == 'true':
-    now = datetime.datetime.now()
-    builtin = 'RunPlugin(plugin://plugin.video.1channel/?mode=GetFilteredResults&section&sort=featured)'
-    xbmc.executebuiltin(builtin)
-    ADDON.setSetting('auto-update-movies-last-run', now.strftime("%Y-%m-%d %H:%M:%S.%f"))
 
 try: xbmc.log('PrimeWire: Service: shutting down...')
 except: pass

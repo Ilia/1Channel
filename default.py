@@ -1213,10 +1213,11 @@ def GetFilteredResults(section=None, genre=None, letter=None, sort='alphabet', p
                        'video_type': video_type, 'year': year}
             li_url = _1CH.build_plugin_url(queries)
 
-            # user will set the prefered group source to get vid, 
-            # below will check if it user prerefed and fill home window with data
-            if sort == "featured":
-                win = xbmcgui.Window(10025)
+            if sort == update_movie_cat():
+                win = xbmcgui.Window(10000)
+                #win.ClearProperty('1ch.movie.%d.title' % count)
+                #win.ClearProperty('1ch.movie.%d.thumb' % count)
+                #win.ClearProperty('1ch.movie.%d.run' % count)
                 win.setProperty('1ch.movie.%d.title' % count, title)
                 win.setProperty('1ch.movie.%d.thumb' % count, thumb)
                 win.setProperty('1ch.movie.%d.run' % count, li_url)
@@ -2600,7 +2601,23 @@ def flush_cache():
         cur = db.cursor()
         cur.execute(sql)
         db.commit()
-        db.close()    
+        db.close() 
+
+def update_movie_cat():
+    if _1CH.get_setting('auto-update-movies-cat') == "Featured":
+        return str("featured")
+    elif _1CH.get_setting('auto-update-movies-cat') == "Most Popular":
+        return str("views")
+    elif _1CH.get_setting('auto-update-movies-cat') == "Highly Rated":
+        return str("ratings")
+    elif _1CH.get_setting('auto-update-movies-cat') == "Date Released":
+        return str("release")
+    elif _1CH.get_setting('auto-update-movies-cat') == "Date Added":
+        return str("date")
+
+def message(txt):
+    xbmc.executebuiltin("XBMC.Notification(1Channel, %s, %d, %s)" % (txt, 5000, xbmcaddon.Addon().getAddonInfo('icon')))
+
 
 mode = _1CH.queries.get('mode', None)
 section = _1CH.queries.get('section', '')
@@ -2630,6 +2647,11 @@ except: pass
 
 if mode == 'main':
     AddonMenu()
+elif mode == "MovieAutoUpdate":
+    message("[Updating] Please wait")
+    sort = update_movie_cat()
+    section = 'movies'
+    GetFilteredResults(section, genre, letter, sort, page)
 elif mode == 'GetSources':
     import urlresolver
 
