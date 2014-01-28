@@ -1215,16 +1215,13 @@ def GetFilteredResults(section=None, genre=None, letter=None, sort='alphabet', p
 
             # user will set the prefered group source to get vid, 
             # below will check if it user prerefed and fill home window with data
-
-            win = xbmcgui.Window(10025)
-            win.setProperty('1ch.movie.%d.title' % count, title)
-            win.setProperty('1ch.movie.%d.thumb' % count, thumb)
-            win.setProperty('1ch.movie.%d.run' % count, li_url)
-        
-            #print "1ch.movie.%d.run = " % count + win.getProperty('1ch.movie.%d.run' % count)
-            count = count + 1
-            #print count
-
+            if sort == "featured":
+                win = xbmcgui.Window(10025)
+                win.setProperty('1ch.movie.%d.title' % count, title)
+                win.setProperty('1ch.movie.%d.thumb' % count, thumb)
+                win.setProperty('1ch.movie.%d.run' % count, li_url)
+                count = count + 1
+            
             xbmcplugin.addDirectoryItem(int(sys.argv[1]), li_url, li,
                                         isFolder=folder, totalItems=total)
 
