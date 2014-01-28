@@ -478,10 +478,6 @@ def get_sources(url, title, img, year, imdbnum, dialog):
         for item in hosters:
             try:
                 label = format_label_source(item)
-                
-                print "URL:" + url
-                print "ITEM URL:" + item['url']
-
                 hosted_media = urlresolver.HostedMediaFile(url=item['url'], title=label)
                 sources.append(hosted_media)
                 if item['multi-part']:
@@ -1215,12 +1211,10 @@ def GetFilteredResults(section=None, genre=None, letter=None, sort='alphabet', p
 
             if sort == update_movie_cat():
                 win = xbmcgui.Window(10000)
-                #win.ClearProperty('1ch.movie.%d.title' % count)
-                #win.ClearProperty('1ch.movie.%d.thumb' % count)
-                #win.ClearProperty('1ch.movie.%d.run' % count)
                 win.setProperty('1ch.movie.%d.title' % count, title)
                 win.setProperty('1ch.movie.%d.thumb' % count, thumb)
-                win.setProperty('1ch.movie.%d.run' % count, li_url)
+                # Needs dialog=1 to show dialog instead of going to window
+                win.setProperty('1ch.movie.%d.path' % count, li_url + '&dialog=1')
                 count = count + 1
             
             xbmcplugin.addDirectoryItem(int(sys.argv[1]), li_url, li,
@@ -2615,10 +2609,6 @@ def update_movie_cat():
     elif _1CH.get_setting('auto-update-movies-cat') == "Date Added":
         return str("date")
 
-def message(txt):
-    xbmc.executebuiltin("XBMC.Notification(1Channel, %s, %d, %s)" % (txt, 5000, xbmcaddon.Addon().getAddonInfo('icon')))
-
-
 mode = _1CH.queries.get('mode', None)
 section = _1CH.queries.get('section', '')
 genre = _1CH.queries.get('genre', '')
@@ -2648,7 +2638,8 @@ except: pass
 if mode == 'main':
     AddonMenu()
 elif mode == "MovieAutoUpdate":
-    message("[Updating] Please wait")
+    builtin = "XBMC.Notification(Updating,Please wait...,5000,%s)" % xbmcaddon.Addon().getAddonInfo('icon')
+    xbmc.executebuiltin(builtin)
     sort = update_movie_cat()
     section = 'movies'
     GetFilteredResults(section, genre, letter, sort, page)
