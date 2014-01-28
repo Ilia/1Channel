@@ -1170,10 +1170,11 @@ def GetFilteredResults(section=None, genre=None, letter=None, sort='alphabet', p
                        'video_type': video_type, 'year': year}
             li_url = _1CH.build_plugin_url(queries)
 
-            # user will set the prefered group source to get vid, 
-            # below will check if it user prerefed and fill home window with data
-            if sort == "featured":
-                win = xbmcgui.Window(10025)
+            if sort == update_movie_cat():
+                win = xbmcgui.Window(10000)
+                #win.ClearProperty('1ch.movie.%d.title' % count)
+                #win.ClearProperty('1ch.movie.%d.thumb' % count)
+                #win.ClearProperty('1ch.movie.%d.run' % count)
                 win.setProperty('1ch.movie.%d.title' % count, title)
                 win.setProperty('1ch.movie.%d.thumb' % count, thumb)
                 win.setProperty('1ch.movie.%d.run' % count, li_url)
@@ -2272,6 +2273,80 @@ def build_listitem(video_type, title, year, img, resurl, imdbnum='', season='', 
             listitem.addContextMenuItems(menu_items, replaceItems=True)
     return listitem
 
+def upgrade_db():
+    try: _1CH.log('Upgrading db...')
+    except: pass
+    for table in ('subscriptions', 'favorites'):
+        sql = "UPDATE %s SET url = replace(url, 'http://www.1channel.ch', '')" % table
+        if DB == 'mysql':
+            db = orm.connect(DB_NAME, DB_USER, DB_PASS, DB_ADDR, buffered=True)
+        else:
+            db = orm.connect(DB_DIR)
+        cur = db.cursor()
+        cur.execute(sql)
+        db.commit()
+        db.close()
+
+
+def fix_existing_strms():
+    for folder in ('tvshow-folder', 'movie-folder'):
+        save_path = _1CH.get_setting(folder)
+        save_path = xbmc.translatePath(save_path)
+        for root, dirs, files in os.walk(save_path):
+            for current_file in files:
+                if current_file.endswith('.strm'):
+                    try: _1CH.log("processing file: %s" % current_file)
+                    except: pass
+                    full_path = os.path.join(root, current_file)
+                    with open(full_path, 'r+') as target:
+                        content = target.read()
+                        target.seek(0)
+                        new_content = content.replace('&url=http%3A%2F%2Fwww.1channel.ch', '&url=')
+                        if not '&video_type=' in new_content:
+                            if folder == 'tvshow-folder':
+                                new_content += '&video_type=episode'
+                            elif folder == 'movie-folder':
+                                new_content += '&video_type=movie'
+                        try: _1CH.log('Writing new content: %s' % new_content)
+                        except: pass
+                        target.write(new_content)
+
+
+def flush_cache():
+    dlg = xbmcgui.Dialog()
+    ln1 = 'Are you sure you want to '
+    ln2 = 'delete the url cache?'
+    ln3 = 'This will slow things down until rebuilt'
+    yes = 'Keep'
+    no = 'Delete'
+    ret = dlg.yesno('Flush web cache', ln1, ln2, ln3, yes, no)
+    if ret:
+        if DB == 'mysql':
+            sql = 'TRUNCATE TABLE url_cache'
+            db = orm.connect(DB_NAME, DB_USER, DB_PASS, DB_ADDR, buffered=True)
+        else:
+            sql = 'DELETE FROM url_cache'
+            db = orm.connect(DB_DIR)
+        cur = db.cursor()
+        cur.execute(sql)
+        db.commit()
+        db.close() 
+
+def update_movie_cat():
+    if _1CH.get_setting('auto-update-movies-cat') == "Featured":
+        return str("featured")
+    elif _1CH.get_setting('auto-update-movies-cat') == "Most Popular":
+        return str("views")
+    elif _1CH.get_setting('auto-update-movies-cat') == "Highly Rated":
+        return str("ratings")
+    elif _1CH.get_setting('auto-update-movies-cat') == "Date Released":
+        return str("release")
+    elif _1CH.get_setting('auto-update-movies-cat') == "Date Added":
+        return str("date")
+
+def message(txt):
+    xbmc.executebuiltin("XBMC.Notification(1Channel, %s, %d, %s)" % (txt, 5000, xbmcaddon.Addon().getAddonInfo('icon')))
+
 
 mode = _1CH.queries.get('mode', None)
 section = _1CH.queries.get('section', '')
@@ -2299,6 +2374,11 @@ _1CH.log(sys.argv)
 
 if mode == 'main':
     AddonMenu()
+elif mode == "MovieAutoUpdate":
+    message("[Updating] Please wait")
+    sort = update_movie_cat()
+    section = 'movies'
+    GetFilteredResults(section, genre, letter, sort, page)
 elif mode == 'GetSources':
     import urlresolver
 
