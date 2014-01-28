@@ -81,6 +81,15 @@
         <setting id="movie-folder" type="folder" label="30804"
                  default="special://userdata/addon_data/plugin.video.1channel/Movies"/>
         
+        <setting id="auto-update-subscriptions" type="bool" label="30805" default="false"/>
+        <setting id="subscription-interval" type="enum" values="2h|5h|10h|15h|24h" label="30806" default="3"
+                 enable="!eq(-1,false)"/>
+        <setting id="library-update" type="bool" label="30807" default="true" enable="eq(-2,true)"/>
+        <setting id="cleanup-subscriptions" type="bool" label="30808" default="true" enable="eq(-3,true)"/>
+        <setting id="last_run" type="text" default="1970-01-01 23:59:00.000000" visible="false"/>
+    </category>
+
+     <category label="Skin Integration">    
         <setting id="auto-update-movies" type="bool" label="30809" default="false"/>
         <setting enable="!eq(-1,false)" id="auto-update-movies-startup" type="bool" label="30811" default="false"/>
         <setting enable="!eq(-2,false)" id="auto-update-movies-cat" type="labelenum" values="Featured|Most Popular|Highly Rated|Date Released|Date Added" label="30813" default="0" />
@@ -88,14 +97,6 @@
                  enable="!eq(-3,false)"/>
         <setting enable="!eq(-4,false)" label="30812" type="action" option="close" action="RunPlugin(plugin://plugin.video.1channel/?mode=MovieAutoUpdate)" />
         <setting id="auto-update-movies-last-run" type="text" default="1970-01-01 23:59:00.000000" visible="false"/>
-        
-        <setting id="auto-update-subscriptions" type="bool" label="30805" default="false"/>
-        <setting id="during-playback" type="bool" label="30809" default="true" enable="eq(-1,true)"/>
-        <setting id="subscription-interval" type="enum" values="2h|5h|10h|15h|24h" label="30806" default="3"
-                 enable="eq(-2,true)"/>
-        <setting id="library-update" type="bool" label="30807" default="true" enable="eq(-3,true)"/>
-        <setting id="cleanup-subscriptions" type="bool" label="30808" default="true" enable="eq(-4,true)"/>
-        <setting id="last_run" type="text" default="1970-01-01 23:59:00.000000" visible="false"/>
     </category>
 
     <category label="Sources">
