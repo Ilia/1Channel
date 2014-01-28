@@ -450,6 +450,10 @@ def get_sources(url, title, img, year, imdbnum, dialog):
         for item in hosters:
             try:
                 label = format_label_source(item)
+                
+                print "URL:" + url
+                print "ITEM URL:" + item['url']
+
                 hosted_media = urlresolver.HostedMediaFile(url=item['url'], title=label)
                 sources.append(hosted_media)
                 if item['multi-part']:
@@ -1141,6 +1145,8 @@ def GetFilteredResults(section=None, genre=None, letter=None, sort='alphabet', p
     total_pages = total / 24
     total = min(total, 24)
 
+    count = 0
+
     pattern = r'class="index_item.+?href="(.+?)" title="Watch (.+?)"?\(?([0-9]{4})?\)?"?>.+?src="(.+?)"'
     regex = re.finditer(pattern, html, re.DOTALL)
     resurls = []
@@ -1163,6 +1169,19 @@ def GetFilteredResults(section=None, genre=None, letter=None, sort='alphabet', p
                        'img': img, 'imdbnum': imdb,
                        'video_type': video_type, 'year': year}
             li_url = _1CH.build_plugin_url(queries)
+
+            # user will set the prefered group source to get vid, 
+            # below will check if it user prerefed and fill home window with data
+
+            win = xbmcgui.Window(10025)
+            win.setProperty('1ch.movie.%d.title' % count, title)
+            win.setProperty('1ch.movie.%d.thumb' % count, thumb)
+            win.setProperty('1ch.movie.%d.run' % count, li_url)
+        
+            #print "1ch.movie.%d.run = " % count + win.getProperty('1ch.movie.%d.run' % count)
+            count = count + 1
+            #print count
+
             xbmcplugin.addDirectoryItem(int(sys.argv[1]), li_url, li,
                                         isFolder=folder, totalItems=total)
 
