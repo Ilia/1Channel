@@ -241,7 +241,6 @@ while not xbmc.abortRequested:
             if not (monitor.isPlaying() or is_scanning):
                 try: xbmc.log('PrimeWire: Service: Updating movies')
                 except: pass
-                # TODO use settings auto-update-movies-folder to update specific section/sort
                 builtin = 'RunPlugin(plugin://plugin.video.1channel/?mode=MovieAutoUpdate)'
                 xbmc.executebuiltin(builtin)
                 ADDON.setSetting('auto-update-movies-last-run', now.strftime("%Y-%m-%d %H:%M:%S.%f"))
