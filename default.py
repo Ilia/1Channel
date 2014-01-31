@@ -1182,7 +1182,12 @@ def GetFilteredResults(section=None, genre=None, letter=None, sort='alphabet', p
             
             xbmcplugin.addDirectoryItem(int(sys.argv[1]), li_url, li,
                                         isFolder=folder, totalItems=total)
-
+    # more
+    command = _1CH.build_plugin_url( {'mode': 'GetFilteredResults', 'section': section, 
+        'sort': sort, 'title': _1CH.get_setting('auto-update-movies-cat'), 'page':'2'})
+    win.setProperty('1ch.movie.more.title', "More")
+    win.setProperty('1ch.movie.more.path', command)
+    
     if html.find('> >> <') > -1:
         label = 'Skip to Page...'
         command = _1CH.build_plugin_url(
