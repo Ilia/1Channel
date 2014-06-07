@@ -1155,6 +1155,7 @@ def GetFilteredResults(section=None, genre=None, letter=None, sort='alphabet', p
     pattern = r'class="index_item.+?href="(.+?)" title="Watch (.+?)"?\(?([0-9]{4})?\)?"?>.+?src="(.+?)"'
     regex = re.finditer(pattern, html, re.DOTALL)
     resurls = []
+    win = xbmcgui.Window(10000)
     for s in regex:
         resurl, title, year, thumb = s.groups()
         if resurl not in resurls:
@@ -1176,7 +1177,6 @@ def GetFilteredResults(section=None, genre=None, letter=None, sort='alphabet', p
             li_url = _1CH.build_plugin_url(queries)
 
             if sort == update_movie_cat():
-                win = xbmcgui.Window(10000)
                 win.setProperty('1ch.movie.%d.title' % count, title)
                 win.setProperty('1ch.movie.%d.thumb' % count, thumb)
                 # Needs dialog=1 to show dialog instead of going to window
@@ -1185,10 +1185,11 @@ def GetFilteredResults(section=None, genre=None, letter=None, sort='alphabet', p
             
             xbmcplugin.addDirectoryItem(int(sys.argv[1]), li_url, li,
                                         isFolder=folder, totalItems=total)
-            # more
-            # command = _1CH.build_plugin_url( {'mode': 'GetFilteredResults', 'section': section, 'sort': sort, 'title': _1CH.get_setting('auto-update-movies-cat'), 'page':'2'})
-            # win.setProperty('1ch.movie.more.title', "More")
-            # win.setProperty('1ch.movie.more.path', command)
+    # more
+    if sort == update_movie_cat():
+        command = _1CH.build_plugin_url( {'mode': 'GetFilteredResults', 'section': section, 'sort': sort, 'title': _1CH.get_setting('auto-update-movies-cat'), 'page':'2'})
+        win.setProperty('1ch.movie.more.title', "More")
+        win.setProperty('1ch.movie.more.path', command)
     
     if html.find('> >> <') > -1:
         label = 'Skip to Page...'
