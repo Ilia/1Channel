@@ -287,6 +287,24 @@ while not xbmc.abortRequested:
                 try: xbmc.log('PrimeWire: Service: Busy... Postponing movies update')
                 except: pass
 
+    if ADDON.getSetting('auto-update-movies') == 'true':
+        now = datetime.datetime.now()
+        last_run = ADDON.getSetting('auto-update-movies-last-run')
+        last_run = datetime.datetime.strptime(last_run, "%Y-%m-%d %H:%M:%S.%f")
+        elapsed = now - last_run
+        threshold = datetime.timedelta(hours=monitor.hours_movie_update)
+        if elapsed > threshold:
+            is_scanning = xbmc.getCondVisibility('Library.IsScanningVideo')
+            if not (monitor.isPlaying() or is_scanning):
+                try: xbmc.log('PrimeWire: Service: Updating movies')
+                except: pass
+                builtin = 'RunPlugin(plugin://plugin.video.1channel/?mode=MovieAutoUpdate)'
+                xbmc.executebuiltin(builtin)
+                ADDON.setSetting('auto-update-movies-last-run', now.strftime("%Y-%m-%d %H:%M:%S.%f"))
+            else:
+                try: xbmc.log('PrimeWire: Service: Busy... Postponing movies update')
+                except: pass
+
     while monitor.tracking and monitor.isPlayingVideo():
         monitor._lastPos = monitor.getTime()
 
