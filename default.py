@@ -467,8 +467,11 @@ def get_sources(url, title, img, year, imdbnum, dialog):
                         partnum += 1
             except:
                 _1CH.log('Error while trying to resolve %s' % url)
-        source = urlresolver.choose_source(sources).get_url()
-        PlaySource(source, title, img, year, imdbnum, video_type, season, episode, dbid, strm=True)
+        try: 
+            source = urlresolver.choose_source(sources).get_url()
+            PlaySource(source, title, img, year, imdbnum, video_type, season, episode, dbid, strm=True)
+        except:
+            pass 
     else:
         try:
             if _1CH.get_setting('auto-play') == 'false': raise Exception, 'auto-play disabled'
@@ -1182,11 +1185,10 @@ def GetFilteredResults(section=None, genre=None, letter=None, sort='alphabet', p
             
             xbmcplugin.addDirectoryItem(int(sys.argv[1]), li_url, li,
                                         isFolder=folder, totalItems=total)
-    # more
-    command = _1CH.build_plugin_url( {'mode': 'GetFilteredResults', 'section': section, 
-        'sort': sort, 'title': _1CH.get_setting('auto-update-movies-cat'), 'page':'2'})
-    win.setProperty('1ch.movie.more.title', "More")
-    win.setProperty('1ch.movie.more.path', command)
+            # more
+            # command = _1CH.build_plugin_url( {'mode': 'GetFilteredResults', 'section': section, 'sort': sort, 'title': _1CH.get_setting('auto-update-movies-cat'), 'page':'2'})
+            # win.setProperty('1ch.movie.more.title', "More")
+            # win.setProperty('1ch.movie.more.path', command)
     
     if html.find('> >> <') > -1:
         label = 'Skip to Page...'
