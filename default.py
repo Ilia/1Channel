@@ -1120,7 +1120,7 @@ def GetFilteredResults(section, genre='', letter='', sort='alphabet', page=None,
             # expose to skin
             if sort == update_movie_cat():
                 win.setProperty('1ch.movie.%d.title' % count, result['title'])
-                win.setProperty('1ch.movie.%d.thumb' % count, result['img'])
+                win.setProperty('1ch.movie.%d.thumb' % count, '%s%s' % ('http:', result['img']))
                 # Needs dialog=1 to show dialog instead of going to window
                 queries = {'mode': section_params['nextmode'], 'url': result['url'], 'title': result['title'], 
                             'img': result['img'], 'dialog': 1, 'video_type': section_params['video_type']}
